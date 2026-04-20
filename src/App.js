@@ -11,6 +11,13 @@ function App() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [name, setName] = useState('');
+  const theme = {
+  background: darkMode ? '#121212' : '#ffffff',
+  text: darkMode ? '#ffffff' : '#000000',
+  card: darkMode ? '#1e1e1e' : '#fafafa',
+  border: darkMode ? '#333' : '#ddd',
+  input: darkMode ? '#2a2a2a' : '#ffffff',
+};
 
   const [showForm, setShowForm] = useState(false);
 
@@ -121,7 +128,7 @@ function App() {
 >
   <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
       {!selectedProject ? (
-        <ProjectList
+        <ProjectList theme={theme}
           projects={projects}
           name={name}
           setName={setName}
@@ -129,8 +136,10 @@ function App() {
           openProject={openProject}
         />
       ) : (
-        <ProjectScreen
-          selectedProject={selectedProject}
+        <ProjectScreen theme={theme}
+          
+  selectedProject={selectedProject}
+  setSelectedProject={setSelectedProject}
           goBack={goBack}
           showForm={showForm}
           setShowForm={setShowForm}
@@ -138,6 +147,7 @@ function App() {
           setForm={setForm}
           addTransaction={addTransaction}
           transactions={transactions}
+          setTransactions={setTransactions}
           totalIn={totalIn}
           totalOut={totalOut}
           balance={balance}
