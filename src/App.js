@@ -11,14 +11,6 @@ function App() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [name, setName] = useState('');
-  const theme = {
-  background: darkMode ? '#121212' : '#ffffff',
-  text: darkMode ? '#ffffff' : '#000000',
-  card: darkMode ? '#1e1e1e' : '#fafafa',
-  border: darkMode ? '#333' : '#ddd',
-  input: darkMode ? '#2a2a2a' : '#ffffff',
-};
-
   const [showForm, setShowForm] = useState(false);
 
   const [form, setForm] = useState({
@@ -29,7 +21,16 @@ function App() {
     payment_mode: 'cash',
     notes: '',
     date: new Date().toISOString().split('T')[0],
+    file: null, // 🔥 IMPORTANT
   });
+
+  const theme = {
+    background: darkMode ? '#121212' : '#ffffff',
+    text: darkMode ? '#ffffff' : '#000000',
+    card: darkMode ? '#1e1e1e' : '#fafafa',
+    border: darkMode ? '#333' : '#ddd',
+    input: darkMode ? '#2a2a2a' : '#ffffff',
+  };
 
   useEffect(() => {
     fetchProjects();
@@ -63,7 +64,7 @@ function App() {
   };
 
   const openProject = (project) => {
-    setSelectedProject(project);
+    setSelectedProject({ ...project });
     fetchTransactions(project.id);
   };
 
@@ -73,9 +74,35 @@ function App() {
     setShowForm(false);
   };
 
+  // 🔥 FINAL ADD TRANSACTION (WITH DEBUG)
   const addTransaction = async () => {
+    console.log('FORM FILE:', form.file); // 👈 DEBUG
+
     if (!form.amount) return;
 
+    let imageUrl = null;
+
+    // 🔥 Upload image
+    if (form.file) {
+      const fileName = `${Date.now()}-${form.file.name}`;
+
+      const { error } = await supabase.storage
+        .from('bills')
+        .upload(fileName, form.file);
+
+      console.log('UPLOAD ERROR:', error); // 👈 DEBUG
+
+      if (!error) {
+        const { data } = supabase.storage
+          .from('bills')
+          .getPublicUrl(fileName);
+
+        imageUrl = data.publicUrl;
+        console.log('IMAGE URL:', imageUrl); // 👈 DEBUG
+      }
+    }
+
+    // 🔥 Insert transaction
     await supabase.from('transactions').insert([
       {
         project_id: selectedProject.id,
@@ -86,12 +113,13 @@ function App() {
         payment_mode: form.payment_mode,
         notes: form.notes,
         date: form.date,
+        image_url: imageUrl,
       },
     ]);
 
     setShowForm(false);
 
-    // reset form
+    // 🔥 Reset form
     setForm({
       amount: '',
       type: 'cash_out',
@@ -100,12 +128,13 @@ function App() {
       payment_mode: 'cash',
       notes: '',
       date: new Date().toISOString().split('T')[0],
+      file: null,
     });
 
     fetchTransactions(selectedProject.id);
   };
 
-  // 🔥 TOTAL CALCULATIONS
+  // 🔥 TOTALS
   const totalIn = transactions
     .filter((t) => t.type === 'cash_in')
     .reduce((sum, t) => sum + Number(t.amount), 0);
@@ -117,18 +146,19 @@ function App() {
   const balance = totalIn - totalOut;
 
   return (
-    
     <div
-  style={{
-    padding: 20,
-    background: darkMode ? '#121212' : '#ffffff',
-    color: darkMode ? '#ffffff' : '#000000',
-    minHeight: '100vh',
-  }}
->
-  <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
+      style={{
+        padding: 20,
+        background: theme.background,
+        color: theme.text,
+        minHeight: '100vh',
+      }}
+    >
+      <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
+
       {!selectedProject ? (
-        <ProjectList theme={theme}
+        <ProjectList
+          theme={theme}
           projects={projects}
           name={name}
           setName={setName}
@@ -136,10 +166,10 @@ function App() {
           openProject={openProject}
         />
       ) : (
-        <ProjectScreen theme={theme}
-          
-  selectedProject={selectedProject}
-  setSelectedProject={setSelectedProject}
+        <ProjectScreen
+          theme={theme}
+          selectedProject={selectedProject}
+          setSelectedProject={setSelectedProject}
           goBack={goBack}
           showForm={showForm}
           setShowForm={setShowForm}
@@ -153,6 +183,18 @@ function App() {
           balance={balance}
         />
       )}
+
+      {/* 🔥 FOOTER */}
+      <div
+        style={{
+          marginTop: 40,
+          textAlign: 'center',
+          fontSize: 12,
+          opacity: 0.6,
+        }}
+      >
+        Created & Designed by Shrey
+      </div>
     </div>
   );
 }

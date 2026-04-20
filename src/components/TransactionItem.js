@@ -15,6 +15,7 @@ function TransactionItem({ t, theme, setTransactions }) {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        gap: 10,
         boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
         transition: '0.2s',
       }}
@@ -29,7 +30,7 @@ function TransactionItem({ t, theme, setTransactions }) {
       }
     >
       {/* LEFT SIDE */}
-      <div>
+      <div style={{ flex: 1 }}>
         <div style={{ fontWeight: 'bold' }}>
           {t.category || 'No Category'}
         </div>
@@ -42,17 +43,18 @@ function TransactionItem({ t, theme, setTransactions }) {
           {t.date} | {t.payment_mode}
         </div>
 
-        {/* Optional Image */}
+        {/* 🔥 IMAGE */}
         {t.image_url && (
           <img
             src={t.image_url}
             alt="bill"
             style={{
-              width: 60,
-              height: 60,
+              width: 70,
+              height: 70,
               objectFit: 'cover',
-              borderRadius: 6,
+              borderRadius: 8,
               marginTop: 8,
+              border: '1px solid #ccc',
             }}
           />
         )}
@@ -74,7 +76,7 @@ function TransactionItem({ t, theme, setTransactions }) {
           {isCashIn ? 'Cash In' : 'Cash Out'}
         </div>
 
-        {/* 🔥 DELETE BUTTON */}
+        {/* 🔥 DELETE */}
         <button
           onClick={async () => {
             const confirmDelete = window.confirm(
@@ -87,7 +89,7 @@ function TransactionItem({ t, theme, setTransactions }) {
               .delete()
               .eq('id', t.id);
 
-            // ✅ Remove from UI without reload
+            // ✅ update UI without reload
             setTransactions((prev) =>
               prev.filter((item) => item.id !== t.id)
             );

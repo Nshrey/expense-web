@@ -1,5 +1,12 @@
 import { supabase } from '../supabaseClient';
 import TransactionItem from './TransactionItem';
+const inputStyle = (theme) => ({
+  padding: 10,
+  borderRadius: 6,
+  border: `1px solid ${theme.border}`,
+  background: theme.input,
+  color: theme.text,
+});
 
 function ProjectScreen({
   selectedProject,
@@ -224,6 +231,160 @@ function ProjectScreen({
             </h3>
 
             {/* (your existing form stays same here) */}
+           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+  {/* 🔥 AMOUNT */}
+  <input
+    placeholder="Amount"
+    type="number"
+    value={form.amount}
+    onChange={(e) =>
+      setForm({ ...form, amount: e.target.value })
+    }
+    style={inputStyle(theme)}
+  />
+
+  {/* 🔥 CASH IN / OUT SWITCH */}
+<div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+
+  <span style={{ fontSize: 12 }}>Cash Out</span>
+
+  <div
+    onClick={() =>
+      setForm({
+        ...form,
+        type: form.type === 'cash_out' ? 'cash_in' : 'cash_out',
+      })
+    }
+    style={{
+      width: 60,
+      height: 28,
+      borderRadius: 20,
+      background: form.type === 'cash_in' ? '#4caf50' : '#ccc',
+      display: 'flex',
+      alignItems: 'center',
+      padding: 3,
+      cursor: 'pointer',
+      transition: '0.3s',
+    }}
+  >
+    <div
+      style={{
+        width: 22,
+        height: 22,
+        borderRadius: '50%',
+        background: 'white',
+        transform:
+          form.type === 'cash_in'
+            ? 'translateX(30px)'
+            : 'translateX(0px)',
+        transition: '0.3s',
+      }}
+    />
+  </div>
+
+  <span style={{ fontSize: 12 }}>Cash In</span>
+
+</div>
+
+  {/* 🔥 PARTY */}
+  <input
+    placeholder={form.type === 'cash_in' ? 'From' : 'To'}
+    value={form.party}
+    onChange={(e) =>
+      setForm({ ...form, party: e.target.value })
+    }
+    style={inputStyle(theme)}
+  />
+
+  {/* 🔥 CATEGORY */}
+  <input
+    placeholder="Category"
+    value={form.category}
+    onChange={(e) =>
+      setForm({ ...form, category: e.target.value })
+    }
+    style={inputStyle(theme)}
+  />
+
+  {/* 🔥 PAYMENT MODE */}
+  <select
+    value={form.payment_mode}
+    onChange={(e) =>
+      setForm({ ...form, payment_mode: e.target.value })
+    }
+    style={inputStyle(theme)}
+  >
+    <option value="cash">Cash</option>
+    <option value="upi">UPI</option>
+    <option value="bank">Bank</option>
+  </select>
+
+  {/* 🔥 DATE */}
+  <input
+    type="date"
+    value={form.date}
+    onChange={(e) =>
+      setForm({ ...form, date: e.target.value })
+    }
+    style={inputStyle(theme)}
+  />
+
+  {/* 🔥 NOTES */}
+  <textarea
+    placeholder="Additional comments"
+    value={form.notes}
+    onChange={(e) =>
+      setForm({ ...form, notes: e.target.value })
+    }
+    style={{
+      ...inputStyle(theme),
+      minHeight: 60,
+    }}
+  />
+
+  {/* 🔥 IMAGE UPLOAD */}
+  <input
+    type="file"
+    accept="image/*"
+    onChange={(e) =>
+      setForm({ ...form, file: e.target.files[0] })
+    }
+  />
+
+  {/* 🔥 BUTTONS */}
+  <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+    <button
+      onClick={addTransaction}
+      style={{
+        flex: 1,
+        padding: 10,
+        background: '#007bff',
+        color: 'white',
+        border: 'none',
+        borderRadius: 6,
+        cursor: 'pointer',
+      }}
+    >
+      Save
+    </button>
+
+    <button
+      onClick={() => setShowForm(false)}
+      style={{
+        flex: 1,
+        padding: 10,
+        background: '#ccc',
+        border: 'none',
+        borderRadius: 6,
+        cursor: 'pointer',
+      }}
+    >
+      Cancel
+    </button>
+  </div>
+
+</div> 
 
           </div>
         </div>
