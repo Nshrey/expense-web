@@ -173,42 +173,7 @@ const formatINR = (value) => {
 </div>
 
       {/* 🔒 STATUS BUTTON */}
-      <div style={{ marginBottom: 15 }}>
-        <button
-          onClick={async () => {
-            const newStatus =
-              selectedProject.status === 'active'
-                ? 'finished'
-                : 'active';
-
-            await supabase
-              .from('projects')
-              .update({ status: newStatus })
-              .eq('id', selectedProject.id);
-
-            // ✅ Update UI without reload
-            setSelectedProject({
-              ...selectedProject,
-              status: newStatus,
-            });
-          }}
-          style={{
-            background:
-              selectedProject.status === 'active'
-                ? 'orange'
-                : 'green',
-            color: 'white',
-            padding: '6px 12px',
-            border: 'none',
-            borderRadius: 6,
-            cursor: 'pointer',
-          }}
-        >
-          {selectedProject.status === 'active'
-            ? 'Finish Project'
-            : 'Resume Project'}
-        </button>
-      </div>
+      
 
       {/* 🔥 TOTALS */}
       <div
