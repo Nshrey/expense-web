@@ -46,6 +46,12 @@ function ProjectScreen({
 
   setShowForm(true);
 };
+const formatINR = (value) => {
+  if (!value) return '';
+  const number = value.toString().replace(/,/g, '');
+  if (isNaN(number)) return '';
+  return Number(number).toLocaleString('en-IN');
+};
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 10 }}>
 
@@ -136,7 +142,7 @@ function ProjectScreen({
         >
           <div style={{ fontSize: 12 }}>Cash In</div>
           <div style={{ fontWeight: 'bold', color: 'green' }}>
-            ₹ {totalIn}
+            ₹ {totalIn.toLocaleString('en-IN')}
           </div>
         </div>
 
@@ -154,7 +160,7 @@ function ProjectScreen({
         >
           <div style={{ fontSize: 12 }}>Cash Out</div>
           <div style={{ fontWeight: 'bold', color: 'red' }}>
-            ₹ {totalOut}
+            ₹ {totalOut.toLocaleString('en-IN')}
           </div>
         </div>
 
@@ -172,7 +178,7 @@ function ProjectScreen({
         >
           <div style={{ fontSize: 12 }}>Balance</div>
           <div style={{ fontWeight: 'bold', color: '#007bff' }}>
-            ₹ {balance}
+            ₹ {balance.toLocaleString('en-IN')}
           </div>
         </div>
       </div>
@@ -197,14 +203,28 @@ function ProjectScreen({
       {/* 🔥 FLOATING BUTTON */}
       <button
         onClick={() => {
-          if (selectedProject.status === 'finished') {
-            alert(
-              'Project is finished. Resume to add expenses.'
-            );
-            return;
-          }
-          setShowForm(true);
-        }}
+  if (selectedProject.status === 'finished') {
+    alert('Project is finished. Resume to add expenses.');
+    return;
+  }
+
+  // 🔥 CLEAR EDIT STATE
+  setEditingTransaction(null);
+
+  // 🔥 RESET FORM
+  setForm({
+    amount: '',
+    type: 'cash_out',
+    party: '',
+    category: '',
+    payment_mode: 'cash',
+    notes: '',
+    date: new Date().toISOString().split('T')[0],
+    file: null,
+  });
+
+  setShowForm(true);
+}}
         style={{
           position: 'fixed',
           bottom: 20,
@@ -257,15 +277,18 @@ function ProjectScreen({
            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
   {/* 🔥 AMOUNT */}
-  <input
-    placeholder="Amount"
-    type="number"
-    value={form.amount}
-    onChange={(e) =>
-      setForm({ ...form, amount: e.target.value })
+<input
+  placeholder="Amount"
+  value={formatINR(form.amount)}
+  onChange={(e) => {
+    const raw = e.target.value.replace(/,/g, '');
+
+    if (!isNaN(raw)) {
+      setForm({ ...form, amount: raw });
     }
-    style={inputStyle(theme)}
-  />
+  }}
+  style={inputStyle(theme)}
+/>
 
   {/* 🔥 CASH IN / OUT SWITCH */}
 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

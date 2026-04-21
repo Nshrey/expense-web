@@ -69,7 +69,7 @@ function TransactionItem({ t, theme, setTransactions, onEdit }){
             color: isCashIn ? 'green' : 'red',
           }}
         >
-          {isCashIn ? '+' : '-'} ₹ {t.amount}
+          {isCashIn ? '+' : '-'} ₹ {Number(t.amount).toLocaleString('en-IN')}
         </div>
 
         <div style={{ fontSize: 12, opacity: 0.7 }}>
