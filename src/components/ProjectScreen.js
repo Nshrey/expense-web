@@ -46,6 +46,46 @@ function ProjectScreen({
 
   setShowForm(true);
 };
+const exportToCSV = () => {
+  if (!transactions.length) {
+    alert('No data to export');
+    return;
+  }
+
+  const headers = [
+    'Date',
+    'Type',
+    'Amount',
+    'Category',
+    'Party',
+    'Mode',
+    'Notes',
+  ];
+
+  const rows = transactions.map((t) => [
+    t.date,
+    t.type,
+    t.amount, // 👈 IMPORTANT: no formatting here
+    t.category,
+    t.party,
+    t.payment_mode,
+    t.notes,
+  ]);
+
+  const csv = [headers, ...rows]
+    .map((row) =>
+      row.map((v) => `"${v ?? ''}"`).join(',')
+    )
+    .join('\n');
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${selectedProject.name}.csv`;
+  a.click();
+};
 const formatINR = (value) => {
   if (!value) return '';
   const number = value.toString().replace(/,/g, '');
@@ -57,30 +97,80 @@ const formatINR = (value) => {
 
       {/* 🔥 HEADER */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 20,
-        }}
-      >
-        <button
-          onClick={goBack}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: theme.text,
-            fontSize: 20,
-            cursor: 'pointer',
-          }}
-        >
-          ←
-        </button>
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 25,
+  }}
+>
+  {/* LEFT */}
+  <button
+    onClick={goBack}
+    style={{
+      background: 'transparent',
+      border: 'none',
+      fontSize: 18,
+      cursor: 'pointer',
+    }}
+  >
+    ←
+  </button>
 
-        <h2 style={{ margin: 0 }}>{selectedProject.name}</h2>
+  {/* CENTER */}
+  <h2 style={{ margin: 0 }}>{selectedProject.name}</h2>
 
-        <div style={{ width: 20 }} />
-      </div>
+  {/* RIGHT */}
+  <div style={{ display: 'flex', gap: 10 }}>
+    <button
+      onClick={exportToCSV}
+      style={{
+        padding: '6px 12px',
+        borderRadius: 6,
+        border: 'none',
+        background: '#4CAF50',
+        color: '#fff',
+        cursor: 'pointer',
+      }}
+    >
+      Download
+    </button>
+
+    <button
+      onClick={async () => {
+        const newStatus =
+          selectedProject.status === 'active'
+            ? 'finished'
+            : 'active';
+
+        await supabase
+          .from('projects')
+          .update({ status: newStatus })
+          .eq('id', selectedProject.id);
+
+        setSelectedProject({
+          ...selectedProject,
+          status: newStatus,
+        });
+      }}
+      style={{
+        padding: '6px 12px',
+        borderRadius: 6,
+        border: 'none',
+        background:
+          selectedProject.status === 'active'
+            ? '#f59e0b'
+            : '#16a34a',
+        color: '#fff',
+        cursor: 'pointer',
+      }}
+    >
+      {selectedProject.status === 'active'
+        ? 'Finish'
+        : 'Resume'}
+    </button>
+  </div>
+</div>
 
       {/* 🔒 STATUS BUTTON */}
       <div style={{ marginBottom: 15 }}>
