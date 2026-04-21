@@ -1,6 +1,6 @@
 import { supabase } from '../supabaseClient';
 
-function TransactionItem({ t, theme, setTransactions }) {
+function TransactionItem({ t, theme, setTransactions, onEdit }){
   const isCashIn = t.type === 'cash_in';
 
   return (
@@ -77,6 +77,18 @@ function TransactionItem({ t, theme, setTransactions }) {
         </div>
 
         {/* 🔥 DELETE */}
+        <button
+  onClick={() => onEdit(t)}
+  style={{
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: 14,
+    marginRight: 8,
+  }}
+>
+  ✏️
+</button>
         <button
           onClick={async () => {
             const confirmDelete = window.confirm(

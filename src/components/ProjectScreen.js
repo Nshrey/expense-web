@@ -8,7 +8,9 @@ const inputStyle = (theme) => ({
   color: theme.text,
 });
 
+
 function ProjectScreen({
+  
   selectedProject,
   setSelectedProject, // ⚠️ IMPORTANT
   goBack,
@@ -23,7 +25,27 @@ function ProjectScreen({
   totalOut,
   balance,
   theme,
+  saving,
+  editingTransaction,
+  setEditingTransaction
 }) {
+
+  const handleEdit = (t) => {
+  setEditingTransaction(t);
+
+  setForm({
+    amount: t.amount,
+    type: t.type,
+    party: t.party,
+    category: t.category,
+    payment_mode: t.payment_mode,
+    notes: t.notes,
+    date: t.date,
+    file: null,
+  });
+
+  setShowForm(true);
+};
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 10 }}>
 
@@ -168,6 +190,7 @@ function ProjectScreen({
   t={t}
   theme={theme}
   setTransactions={setTransactions}
+  onEdit={handleEdit} // ✅ ADD THIS
 />
       ))}
 
@@ -366,7 +389,7 @@ function ProjectScreen({
         cursor: 'pointer',
       }}
     >
-      Save
+      {saving ? 'Saving...' : 'Save'}
     </button>
 
     <button
