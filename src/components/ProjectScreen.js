@@ -7,6 +7,17 @@ const inputStyle = (theme) => ({
   background: theme.input,
   color: theme.text,
 });
+const cardStyle = (theme) => ({
+  flex: 1,
+  padding: 16,
+  borderRadius: 16,
+  textAlign: 'center',
+  border: `1px solid ${theme.border}`,
+  boxShadow:
+    theme.background === '#121212'
+      ? '0 4px 20px rgba(0,0,0,0.6)'
+      : '0 4px 12px rgba(0,0,0,0.08)',
+});
 
 
 function ProjectScreen({
@@ -175,68 +186,53 @@ const formatINR = (value) => {
       {/* 🔒 STATUS BUTTON */}
       
 
-      {/* 🔥 TOTALS */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 10,
-          marginBottom: 20,
-        }}
-      >
-        <div
-          style={{
-            flex: 1,
-            padding: 12,
-            borderRadius: 10,
-            textAlign: 'center',
-            background:
-              theme.background === '#121212'
-                ? '#1f2a24'
-                : '#e6f7ec',
-          }}
-        >
-          <div style={{ fontSize: 12 }}>Cash In</div>
-          <div style={{ fontWeight: 'bold', color: 'green' }}>
-            ₹ {totalIn.toLocaleString('en-IN')}
-          </div>
-        </div>
+     {/* 🔥 TOTALS */}
+<div
+  style={{
+    display: 'flex',
+    gap: 12,
+    marginBottom: 20,
+  }}
+>
+  {/* CASH IN */}
+  <div
+    style={{
+      ...cardStyle(theme),
+      background: 'linear-gradient(135deg, #d4f8e8, #b7f0d6)',
+    }}
+  >
+    <div style={{ fontSize: 12 }}>Cash In</div>
+    <div style={{ fontWeight: 'bold', color: 'green' }}>
+      ₹ {totalIn.toLocaleString('en-IN')}
+    </div>
+  </div>
 
-        <div
-          style={{
-            flex: 1,
-            padding: 12,
-            borderRadius: 10,
-            textAlign: 'center',
-            background:
-              theme.background === '#121212'
-                ? '#2a1f1f'
-                : '#fdeaea',
-          }}
-        >
-          <div style={{ fontSize: 12 }}>Cash Out</div>
-          <div style={{ fontWeight: 'bold', color: 'red' }}>
-            ₹ {totalOut.toLocaleString('en-IN')}
-          </div>
-        </div>
+  {/* CASH OUT */}
+  <div
+    style={{
+      ...cardStyle(theme),
+      background: 'linear-gradient(135deg, #ffe5e5, #ffd6d6)',
+    }}
+  >
+    <div style={{ fontSize: 12 }}>Cash Out</div>
+    <div style={{ fontWeight: 'bold', color: 'red' }}>
+      ₹ {totalOut.toLocaleString('en-IN')}
+    </div>
+  </div>
 
-        <div
-          style={{
-            flex: 1,
-            padding: 12,
-            borderRadius: 10,
-            textAlign: 'center',
-            background:
-              theme.background === '#121212'
-                ? '#1f2633'
-                : '#e6f0ff',
-          }}
-        >
-          <div style={{ fontSize: 12 }}>Balance</div>
-          <div style={{ fontWeight: 'bold', color: '#007bff' }}>
-            ₹ {balance.toLocaleString('en-IN')}
-          </div>
-        </div>
-      </div>
+  {/* BALANCE */}
+  <div
+    style={{
+      ...cardStyle(theme),
+      background: 'linear-gradient(135deg, #e6f0ff, #d6e4ff)',
+    }}
+  >
+    <div style={{ fontSize: 12 }}>Balance</div>
+    <div style={{ fontWeight: 'bold', color: '#007bff' }}>
+      ₹ {balance.toLocaleString('en-IN')}
+    </div>
+  </div>
+</div>
 
       {/* 🔥 TRANSACTIONS */}
       <h3 style={{ marginTop: 20, marginBottom: 10 }}>
@@ -256,47 +252,52 @@ const formatINR = (value) => {
       ))}
 
       {/* 🔥 FLOATING BUTTON */}
-      <button
-        onClick={() => {
-  if (selectedProject.status === 'finished') {
-    alert('Project is finished. Resume to add expenses.');
-    return;
-  }
+<button
+  onClick={() => {
+    if (selectedProject.status === 'finished') {
+      alert('Project is finished. Resume to add expenses.');
+      return;
+    }
 
-  // 🔥 CLEAR EDIT STATE
-  setEditingTransaction(null);
+    setEditingTransaction(null);
 
-  // 🔥 RESET FORM
-  setForm({
-    amount: '',
-    type: 'cash_out',
-    party: '',
-    category: '',
-    payment_mode: 'cash',
-    notes: '',
-    date: new Date().toISOString().split('T')[0],
-    file: null,
-  });
+    setForm({
+      amount: '',
+      type: 'cash_out',
+      party: '',
+      category: '',
+      payment_mode: 'cash',
+      notes: '',
+      date: new Date().toISOString().split('T')[0],
+      file: null,
+    });
 
-  setShowForm(true);
-}}
-        style={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          width: 60,
-          height: 60,
-          borderRadius: '50%',
-          background: '#007bff',
-          color: 'white',
-          fontSize: 24,
-          border: 'none',
-          cursor: 'pointer',
-          boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-        }}
-      >
-        +
-      </button>
+    setShowForm(true);
+  }}
+  style={{
+    position: 'fixed',
+    bottom: 25,
+    right: 25,
+    width: 65,
+    height: 65,
+    borderRadius: '50%',
+    background: 'linear-gradient(135deg, #007bff, #0056d2)',
+    color: 'white',
+    fontSize: 28,
+    border: 'none',
+    cursor: 'pointer',
+    boxShadow: '0 8px 25px rgba(0,123,255,0.4)',
+    transition: 'all 0.2s ease',
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.transform = 'scale(1.08)';
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.transform = 'scale(1)';
+  }}
+>
+  +
+</button>
 
       {/* 🔥 MODAL FORM (unchanged) */}
       {showForm && (
@@ -307,7 +308,8 @@ const formatINR = (value) => {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'rgba(0,0,0,0.5)',
+            background: 'rgba(0,0,0,0.6)',
+backdropFilter: 'blur(4px)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -315,14 +317,19 @@ const formatINR = (value) => {
           }}
         >
           <div
-            style={{
-              background: theme.card,
-              color: theme.text,
-              padding: 24,
-              borderRadius: 12,
-              width: '90%',
-              maxWidth: 400,
-            }}
+           style={{
+  background: theme.card,
+  color: theme.text,
+  padding: 24,
+  borderRadius: 16,
+  width: '90%',
+  maxWidth: 420,
+  boxShadow:
+    theme.background === '#121212'
+      ? '0 10px 40px rgba(0,0,0,0.8)'
+      : '0 10px 30px rgba(0,0,0,0.15)',
+  animation: 'fadeIn 0.2s ease',
+}}
           >
             <h3 style={{ marginBottom: 15 }}>
               Add Transaction
@@ -458,14 +465,15 @@ const formatINR = (value) => {
     <button
       onClick={addTransaction}
       style={{
-        flex: 1,
-        padding: 10,
-        background: '#007bff',
-        color: 'white',
-        border: 'none',
-        borderRadius: 6,
-        cursor: 'pointer',
-      }}
+  flex: 1,
+  padding: 12,
+  background: 'linear-gradient(135deg, #007bff, #0056d2)',
+  color: 'white',
+  border: 'none',
+  borderRadius: 8,
+  cursor: 'pointer',
+  fontWeight: 500,
+}}
     >
       {saving ? 'Saving...' : 'Save'}
     </button>
@@ -473,13 +481,13 @@ const formatINR = (value) => {
     <button
       onClick={() => setShowForm(false)}
       style={{
-        flex: 1,
-        padding: 10,
-        background: '#ccc',
-        border: 'none',
-        borderRadius: 6,
-        cursor: 'pointer',
-      }}
+  flex: 1,
+  padding: 12,
+  background: theme.input,
+  border: `1px solid ${theme.border}`,
+  borderRadius: 8,
+  cursor: 'pointer',
+}}
     >
       Cancel
     </button>
