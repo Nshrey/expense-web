@@ -7,11 +7,11 @@ import ThemeToggle from './components/ThemeToggle';
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
-  const saved = localStorage.getItem('theme');
-  return saved === 'dark';
-});
+    const saved = localStorage.getItem('theme');
+    return saved === 'dark';
+  });
   const [projects, setProjects] = useState([]);
-  
+
   const [selectedProject, setSelectedProject] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [name, setName] = useState('');
@@ -41,8 +41,8 @@ function App() {
     fetchProjects();
   }, []);
   useEffect(() => {
-  localStorage.setItem('theme', darkMode ? 'dark' : 'light');
-}, [darkMode]);
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
 
   const fetchProjects = async () => {
     const { data } = await supabase
@@ -63,23 +63,23 @@ function App() {
     setTransactions(data || []);
   };
 
-const addProject = async () => {
-  if (!name.trim()) return;
+  const addProject = async () => {
+    if (!name.trim()) return;
 
-  const exists = projects.some(
-    (p) => p.name.toLowerCase() === name.trim().toLowerCase()
-  );
+    const exists = projects.some(
+      (p) => p.name.toLowerCase() === name.trim().toLowerCase()
+    );
 
-  if (exists) {
-    alert('Project with this name already exists');
-    return;
-  }
+    if (exists) {
+      alert('Project with this name already exists');
+      return;
+    }
 
-  await supabase.from('projects').insert([{ name: name.trim() }]);
+    await supabase.from('projects').insert([{ name: name.trim() }]);
 
-  setName('');
-  fetchProjects();
-};
+    setName('');
+    fetchProjects();
+  };
   const openProject = (project) => {
     setSelectedProject({ ...project });
     fetchTransactions(project.id);
@@ -92,82 +92,82 @@ const addProject = async () => {
   };
 
   // 🔥 FINAL ADD TRANSACTION (WITH DEBUG)
-const addTransaction = async () => {
-  if (!form.amount || saving) return;
+  const addTransaction = async () => {
+    if (!form.amount || saving) return;
 
-  setSaving(true);
+    setSaving(true);
 
-  let imageUrl = null;
+    let imageUrl = null;
 
-  // Upload image (only if new file selected)
-  if (form.file) {
-    const fileName = `${Date.now()}-${form.file.name}`;
+    // Upload image (only if new file selected)
+    if (form.file) {
+      const fileName = `${Date.now()}-${form.file.name}`;
 
-    const { error } = await supabase.storage
-      .from('bills')
-      .upload(fileName, form.file);
-
-    if (!error) {
-      const { data } = supabase.storage
+      const { error } = await supabase.storage
         .from('bills')
-        .getPublicUrl(fileName);
+        .upload(fileName, form.file);
 
-      imageUrl = data.publicUrl;
+      if (!error) {
+        const { data } = supabase.storage.from('bills').getPublicUrl(fileName);
+
+        imageUrl = data.publicUrl;
+      }
     }
-  }
 
-  // 🧠 MAIN LOGIC
-  if (editingTransaction) {
-    // 🔥 UPDATE
-    await supabase
-      .from('transactions')
-      .update({
-        amount: Number(form.amount),
-        type: form.type,
-        party: form.party,
-        category: form.category,
-        payment_mode: form.payment_mode,
-        notes: form.notes,
-        date: form.date,
-        image_url: imageUrl || editingTransaction.image_url,
-      })
-      .eq('id', editingTransaction.id);
-  } else {
-    // 🔥 INSERT
-    await supabase.from('transactions').insert([
-      {
-        project_id: selectedProject.id,
-        amount: Number(form.amount),
-        type: form.type,
-        party: form.party,
-        category: form.category,
-        payment_mode: form.payment_mode,
-        notes: form.notes,
-        date: form.date,
-        image_url: imageUrl,
-      },
-    ]);
-  }
+    // 🧠 MAIN LOGIC
+    if (editingTransaction) {
+      // 🔥 UPDATE
+      await supabase
+        .from('transactions')
+        .update({
+          amount: Number(form.amount),
+          type: form.type,
+          party: form.party,
+          category: form.category,
+          payment_mode: form.payment_mode,
+          notes: form.notes,
+          date: form.date,
+          time: form.time,
+          image_url: imageUrl || editingTransaction.image_url,
+        })
+        .eq('id', editingTransaction.id);
+    } else {
+      // 🔥 INSERT
+      await supabase.from('transactions').insert([
+        {
+          project_id: selectedProject.id,
+          amount: Number(form.amount),
+          type: form.type,
+          party: form.party,
+          category: form.category,
+          payment_mode: form.payment_mode,
+          notes: form.notes,
+          date: form.date,
+          image_url: imageUrl,
+        },
+      ]);
+    }
 
-  // Reset everything
-  setEditingTransaction(null);
-  setShowForm(false);
+    // Reset everything
+    setEditingTransaction(null);
+    setShowForm(false);
 
-  setForm({
-    amount: '',
-    type: 'cash_out',
-    party: '',
-    category: '',
-    payment_mode: 'cash',
-    notes: '',
-    date: new Date().toISOString().split('T')[0],
-    file: null,
-  });
+    setForm({
+      amount: '',
+      type: 'cash_out',
+      party: '',
+      category: '',
+      payment_mode: 'cash',
+      notes: '',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toTimeString().slice(0, 5),
+      file: null,
+    });
 
-  setSaving(false);
+    setSaving(false);
 
-  fetchTransactions(selectedProject.id);
-};
+    fetchTransactions(selectedProject.id);
+  };
 
   // 🔥 TOTALS
   const totalIn = transactions
@@ -218,7 +218,7 @@ const addTransaction = async () => {
           balance={balance}
           saving={saving}
           editingTransaction={editingTransaction}
-setEditingTransaction={setEditingTransaction}
+          setEditingTransaction={setEditingTransaction}
         />
       )}
 
